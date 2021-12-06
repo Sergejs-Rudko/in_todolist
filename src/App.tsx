@@ -3,13 +3,13 @@ import './App.css';
 import {FilterValueType, TaskType, Todolist} from "./Todolist";
 import {v1} from "uuid";
 
+
 function App() {
 
     let [tasks, setTasks] = useState<Array<TaskType>>([
         {id: v1(), title: "HTML", isDone: true},
         {id: v1(), title: "Css", isDone: true},
         {id: v1(), title: "React", isDone: false},
-        {id: v1(), title: "redux", isDone: false},
     ])
 
     let [filter, setFilter] = useState<FilterValueType>("all")
@@ -33,6 +33,15 @@ function App() {
         setFilter(value)
     }
 
+    const changeTaskStatus = (id: string, isDone: boolean) => {
+        let taskToChange = tasks.find((task) => task.id === id)
+        if (taskToChange) {
+            taskToChange.isDone = isDone
+        }
+        let copyTasks = [...tasks]
+        setTasks(copyTasks)
+    }
+
     let tasksForTodolist = tasks
 
     if (filter === "completed") {
@@ -49,6 +58,8 @@ function App() {
                       removeTask={removeTask}
                       changeFilter={changeFilter}
                       addTask={addTask}
+                      changeTaskStatus={changeTaskStatus}
+                      filter={filter}
             />
         </div>
     );
