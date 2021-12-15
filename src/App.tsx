@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import './App.css';
 import {FilterValueType, TaskType, Todolist} from "./Todolist";
 import {v1} from "uuid";
+import {AddItemForm} from "./AddItemForm";
 
 
 function App() {
@@ -15,7 +16,7 @@ function App() {
         {id: todolistID2, title: "What to buy", filter: "completed"},
     ])
 
-    let [allTasks, setAllTasks] = useState({
+    let [allTasks, setAllTasks] = useState<TasksStateType>({
         [todolistID1]: [
             {id: v1(), title: "HTML", isDone: true},
             {id: v1(), title: "Css", isDone: true},
@@ -66,19 +67,35 @@ function App() {
         setTodolists(newTodolists)
     }
 
-    const addTodolist = () => {
-        let todolist: TodolistType = {id: v1(), title: "Test", filter: "all"}
+    const addTodolist = (title: string) => {
+        let todolist: TodolistType = {id: v1(), title: title, filter: "all"}
         setTodolists([todolist, ...todolists])
         setAllTasks({...allTasks, [todolist.id]: []})
+    }
+
+    const changeTaskTitle = (todolistID: string, taskID: string, newTitle: string) => {
+        let todolist = allTasks[todolistID]
+        let task = todolist.find((task) => task.id === taskID)
+        if (task) {
+            task.title = newTitle
+        }
+        setAllTasks({...allTasks})
+    }
+
+    const changeTodolistTitle = (id: string, newTitle: string) => {
+        let todolist = todolists.find((tl) => tl.id === id)
+        if (todolist) {
+            todolist.title = newTitle
+        }
+        setTodolists([...todolists])
     }
 
 
     return (
         <div className="App">
-            <div>
-                <input/>
-                <button onClick={addTodolist}>+ todolist</button>
-            </div>
+            <AddItemForm addItem={(title: string) => {
+                addTodolist(title)
+            }}/>
             {
                 todolists.map((tl) => {
 
@@ -101,6 +118,8 @@ function App() {
                                   changeTaskStatus={changeTaskStatus}
                                   filter={tl.filter}
                                   removeTodolist={removeTodolist}
+                                  changeTaskTitle={changeTaskTitle}
+                                  changeTodolistTitle={changeTodolistTitle}
                         />
                     )
                 })
@@ -117,5 +136,9 @@ type TodolistType = {
     id: string
     title: string
     filter: FilterValueType
+}
+
+type TasksStateType = {
+    [key: string]: Array<TaskType>
 }
 export default App;
